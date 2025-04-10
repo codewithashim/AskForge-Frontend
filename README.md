@@ -1,0 +1,1 @@
+A customizable AI chatbot platform that can be embedded into any website. Clients can choose from multiple interface styles, train the chatbot using their own files, and get instant, intelligent responses powered by leading AI models. Built for flexibility, scalability, and ease of integration.

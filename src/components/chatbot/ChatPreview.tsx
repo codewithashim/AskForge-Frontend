@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
-import { MessageSquare, X, Send, Maximize2, Minimize2, CornerUpLeft, ThumbsUp, ThumbsDown } from "lucide-react";
+import { MessageSquare, X, Send, Maximize2, Minimize2, CornerUpLeft, ThumbsUp, ThumbsDown, Paperclip, MicIcon, Image, Smile } from "lucide-react";
 
 type ChatbotConfig = {
   type: string;
@@ -15,6 +15,17 @@ type ChatbotConfig = {
   logoUrl: string;
   chatHeaderText?: string;
   showTypingIndicator?: boolean;
+  position?: string;
+  allowAttachments?: boolean;
+  allowVoiceInput?: boolean;
+  showEmojiPicker?: boolean;
+  messageBubbleStyle?: string;
+  userBubbleColor?: string;
+  botBubbleColor?: string;
+  inputStyle?: string;
+  showTimestamp?: boolean;
+  animationStyle?: string;
+  darkMode?: boolean;
 };
 
 type Message = {
@@ -118,12 +129,69 @@ const ChatPreview = ({ config }: { config: ChatbotConfig }) => {
       default: return 'text-base';
     }
   };
+
+  // Get position classes
+  const getPositionClasses = () => {
+    switch(config.position) {
+      case 'top-right': return 'top-4 right-4';
+      case 'top-left': return 'top-4 left-4';
+      case 'bottom-left': return 'bottom-4 left-4';
+      case 'bottom-right':
+      default: return 'bottom-4 right-4';
+    }
+  };
+
+  // Get message bubble styles
+  const getMessageBubbleStyle = (sender: 'user' | 'bot') => {
+    const baseClasses = `px-4 py-2 ${getBorderRadius()}`;
+    
+    if (sender === 'user') {
+      const userBubbleColor = config.userBubbleColor || config.primaryColor;
+      
+      if (config.messageBubbleStyle === 'modern') {
+        return `${baseClasses} text-white rounded-br-none shadow-md` + 
+               (config.darkMode ? ' bg-opacity-90' : '');
+      } else if (config.messageBubbleStyle === 'minimal') {
+        return `${baseClasses} text-white border border-white/10 rounded-br-none`;
+      } else if (config.messageBubbleStyle === 'outlined') {
+        return `${baseClasses} bg-transparent border-2 text-gray-800 dark:text-white rounded-br-none`;
+      } else {
+        // Default style
+        return `${baseClasses} text-white rounded-br-none`;
+      }
+    } else {
+      const botBubbleColor = config.botBubbleColor || 'bg-gray-100';
+      const botTextColor = config.darkMode ? 'text-white' : 'text-gray-800';
+      
+      if (config.messageBubbleStyle === 'modern') {
+        return `${baseClasses} ${botTextColor} bg-gray-100 dark:bg-gray-700 rounded-bl-none shadow-md`;
+      } else if (config.messageBubbleStyle === 'minimal') {
+        return `${baseClasses} ${botTextColor} bg-gray-100 dark:bg-gray-700 border border-white/10 rounded-bl-none`;
+      } else if (config.messageBubbleStyle === 'outlined') {
+        return `${baseClasses} bg-transparent border-2 border-gray-200 dark:border-gray-700 ${botTextColor} rounded-bl-none`;
+      } else {
+        // Default style
+        return `${baseClasses} bg-gray-100 dark:bg-gray-700 ${botTextColor} rounded-bl-none`;
+      }
+    }
+  };
+  
+  // Get animation style class
+  const getAnimationClass = () => {
+    switch(config.animationStyle) {
+      case 'bounce': return 'animate-bounce-slow';
+      case 'pulse': return 'animate-pulse-slow';
+      case 'slide': return 'animate-slide-right';
+      case 'fade':
+      default: return 'animate-fade-in';
+    }
+  };
   
   // If not open and not fullscreen, just show the chat button
   if (!isOpen && !isFullscreen && config.type === 'bubble') {
     return (
       <button
-        className="w-14 h-14 rounded-full flex items-center justify-center shadow-lg transition-transform duration-300 hover:scale-110 animate-fade-in"
+        className={`w-14 h-14 rounded-full flex items-center justify-center shadow-lg transition-transform duration-300 hover:scale-110 ${getAnimationClass()}`}
         style={{ backgroundColor: config.primaryColor }}
         onClick={() => setIsOpen(true)}
       >
@@ -160,9 +228,30 @@ const ChatPreview = ({ config }: { config: ChatbotConfig }) => {
 
   // Apply font family
   const fontFamilyClass = config.fontFamily ? `font-${config.fontFamily.toLowerCase().replace(' ', '-')}` : '';
+  
+  // Dark mode classes
+  const darkModeClasses = config.darkMode 
+    ? 'bg-gray-800 border-gray-700 text-white' 
+    : 'bg-white border-gray-200 text-gray-800';
+
+  // Input style classes
+  const getInputStyleClasses = () => {
+    const baseClasses = 'flex-1 px-3 py-2 focus:outline-none focus:ring-1';
+    
+    switch(config.inputStyle) {
+      case 'modern':
+        return `${baseClasses} rounded-l-lg border-0 shadow-inner ${config.darkMode ? 'bg-gray-700 text-white' : 'bg-gray-50'}`;
+      case 'minimal':
+        return `${baseClasses} rounded-l-lg border-t-0 border-b-0 border-l-0 border-r ${config.darkMode ? 'bg-gray-800 border-gray-700 text-white' : 'bg-white border-gray-200'}`;
+      case 'outlined':
+        return `${baseClasses} rounded-l-lg border ${config.darkMode ? 'bg-gray-800 border-gray-600 text-white' : 'bg-white border-gray-300'}`;
+      default:
+        return `${baseClasses} rounded-l-lg border ${config.darkMode ? 'bg-gray-700 border-gray-600 text-white' : 'bg-white border-gray-300'}`;
+    }
+  };
 
   return (
-    <div className={`flex flex-col bg-white border overflow-hidden ${containerClasses} ${getBorderRadius()} ${fontFamilyClass} ${getFontSize()} animate-fade-in`}>
+    <div className={`flex flex-col overflow-hidden ${containerClasses} ${getBorderRadius()} ${fontFamilyClass} ${getFontSize()} ${getAnimationClass()} ${darkModeClasses}`}>
       {/* Header */}
       <div 
         className="px-4 py-3 flex items-center justify-between"
@@ -213,16 +302,16 @@ const ChatPreview = ({ config }: { config: ChatbotConfig }) => {
       </div>
       
       {/* Messages */}
-      <div className={`flex-1 p-4 overflow-y-auto ${maxHeight} ${chatContentClasses}`}>
+      <div className={`flex-1 p-4 overflow-y-auto ${maxHeight} ${chatContentClasses} ${config.darkMode ? 'bg-gray-800' : 'bg-white'}`}>
         {messages.map((message) => (
           <div
             key={message.id}
             className={`mb-3 ${
               message.sender === 'user' ? 'text-right' : 'text-left'
-            } animate-fade-in`}
+            } ${getAnimationClass()}`}
           >
             {message.isTyping ? (
-              <div className="inline-block px-4 py-2 bg-gray-100 text-gray-800 rounded-lg rounded-bl-none">
+              <div className={`inline-block px-4 py-2 ${config.darkMode ? 'bg-gray-700 text-white' : 'bg-gray-100 text-gray-800'} rounded-lg rounded-bl-none`}>
                 <div className="flex space-x-1 items-center h-5">
                   <div className="w-2 h-2 rounded-full bg-gray-400 animate-pulse"></div>
                   <div className="w-2 h-2 rounded-full bg-gray-400 animate-pulse" style={{ animationDelay: '0.2s' }}></div>
@@ -231,26 +320,32 @@ const ChatPreview = ({ config }: { config: ChatbotConfig }) => {
               </div>
             ) : (
               <div
-                className={`inline-block px-4 py-2 ${getBorderRadius()} ${
-                  message.sender === 'user'
-                    ? 'text-white rounded-br-none'
-                    : 'bg-gray-100 text-gray-800 rounded-bl-none'
-                }`}
+                className={`inline-block ${getMessageBubbleStyle(message.sender)}`}
                 style={{
-                  backgroundColor: message.sender === 'user' ? config.primaryColor : undefined,
+                  backgroundColor: message.sender === 'user' 
+                    ? (config.userBubbleColor || config.primaryColor) 
+                    : (config.botBubbleColor || (config.darkMode ? '#374151' : '#f3f4f6')),
+                  borderColor: message.sender === 'user' && config.messageBubbleStyle === 'outlined'
+                    ? config.userBubbleColor || config.primaryColor
+                    : undefined
                 }}
               >
                 {message.text}
+                {config.showTimestamp && (
+                  <div className={`text-xs mt-1 ${message.sender === 'user' ? 'text-white/70' : 'text-gray-500'}`}>
+                    {message.timestamp.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'})}
+                  </div>
+                )}
               </div>
             )}
             
             {/* Feedback buttons for bot messages */}
             {message.sender === 'bot' && !message.isTyping && (
               <div className="flex mt-1 ml-1 space-x-1">
-                <button className="text-gray-400 hover:text-gray-600 p-1 rounded-full transition-colors">
+                <button className={`${config.darkMode ? 'text-gray-400 hover:text-gray-300' : 'text-gray-400 hover:text-gray-600'} p-1 rounded-full transition-colors`}>
                   <ThumbsUp className="h-3 w-3" />
                 </button>
-                <button className="text-gray-400 hover:text-gray-600 p-1 rounded-full transition-colors">
+                <button className={`${config.darkMode ? 'text-gray-400 hover:text-gray-300' : 'text-gray-400 hover:text-gray-600'} p-1 rounded-full transition-colors`}>
                   <ThumbsDown className="h-3 w-3" />
                 </button>
               </div>
@@ -260,14 +355,13 @@ const ChatPreview = ({ config }: { config: ChatbotConfig }) => {
       </div>
       
       {/* Input */}
-      <div className="border-t p-3">
+      <div className={`border-t p-3 ${config.darkMode ? 'border-gray-700 bg-gray-800' : 'border-gray-200 bg-white'}`}>
         <div className="flex items-center">
           <input
             type="text"
             placeholder="Type your message..."
-            className="flex-1 border rounded-l-lg px-3 py-2 focus:outline-none focus:ring-1"
+            className={getInputStyleClasses()}
             style={{ 
-              borderColor: "var(--input)",
               outlineColor: config.primaryColor 
             }}
             value={inputValue}
@@ -276,6 +370,33 @@ const ChatPreview = ({ config }: { config: ChatbotConfig }) => {
               if (e.key === 'Enter') handleSend();
             }}
           />
+          {config.allowAttachments && (
+            <Button
+              variant="ghost"
+              size="icon"
+              className={`h-10 ${config.darkMode ? 'text-gray-400 hover:text-white hover:bg-gray-700' : 'text-gray-500 hover:text-gray-700'}`}
+            >
+              <Paperclip className="h-5 w-5" />
+            </Button>
+          )}
+          {config.showEmojiPicker && (
+            <Button
+              variant="ghost"
+              size="icon"
+              className={`h-10 ${config.darkMode ? 'text-gray-400 hover:text-white hover:bg-gray-700' : 'text-gray-500 hover:text-gray-700'}`}
+            >
+              <Smile className="h-5 w-5" />
+            </Button>
+          )}
+          {config.allowVoiceInput && (
+            <Button
+              variant="ghost"
+              size="icon"
+              className={`h-10 ${config.darkMode ? 'text-gray-400 hover:text-white hover:bg-gray-700' : 'text-gray-500 hover:text-gray-700'}`}
+            >
+              <MicIcon className="h-5 w-5" />
+            </Button>
+          )}
           <button
             className="px-3 py-2 rounded-r-lg transition-transform hover:scale-105"
             style={{ backgroundColor: config.primaryColor }}

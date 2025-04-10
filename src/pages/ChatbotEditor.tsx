@@ -96,15 +96,15 @@ const ChatbotEditor = () => {
   return (
     <DashboardLayout>
       <div className="mb-6 animate-fade-in">
-        <h1 className="text-2xl font-bold text-askforge-gray-900">
+        {/* <h1 className="text-2xl font-bold text-askforge-gray-900">
           {isNew ? 'Create Chatbot' : `Edit: ${existingBot?.name}`}
-        </h1>
-        <p className="text-askforge-gray-500">
+        </h1> */}
+        {/* <p className="text-askforge-gray-500">
           {isNew 
             ? 'Configure your new chatbot instance' 
             : 'Manage your chatbot settings and knowledge base'
           }
-        </p>
+        </p> */}
       </div>
       
       {!isNew && (
