@@ -1,0 +1,537 @@
+
+import React, { useState } from 'react';
+import DashboardLayout from '@/components/layout/DashboardLayout';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { 
+  MessageSquare, 
+  ThumbsUp, 
+  ThumbsDown, 
+  Users, 
+  HelpCircle, 
+  BarChart2, 
+  TrendingUp, 
+  Calendar,
+  ArrowRight,
+  ChevronDown,
+  Clock,
+  RefreshCw,
+  ChevronUp
+} from 'lucide-react';
+import { Button } from "@/components/ui/button";
+import {
+  AreaChart,
+  Area,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  LineChart,
+  Line
+} from 'recharts';
+import { 
+  ChartContainer, 
+  ChartTooltip, 
+  ChartTooltipContent 
+} from "@/components/ui/chart";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+
+// Sample data for the charts
+const conversationData = [
+  { day: '04/01', conversations: 58, users: 42 },
+  { day: '04/02', conversations: 65, users: 48 },
+  { day: '04/03', conversations: 72, users: 53 },
+  { day: '04/04', conversations: 78, users: 57 },
+  { day: '04/05', conversations: 63, users: 49 },
+  { day: '04/06', conversations: 52, users: 41 },
+  { day: '04/07', conversations: 48, users: 38 },
+  { day: '04/08', conversations: 58, users: 45 },
+  { day: '04/09', conversations: 72, users: 52 },
+  { day: '04/10', conversations: 80, users: 59 },
+  { day: '04/11', conversations: 85, users: 62 },
+  { day: '04/12', conversations: 76, users: 55 },
+  { day: '04/13', conversations: 68, users: 49 },
+  { day: '04/14', conversations: 60, users: 45 },
+  { day: '04/15', conversations: 72, users: 52 },
+  { day: '04/16', conversations: 78, users: 58 },
+  { day: '04/17', conversations: 82, users: 61 },
+  { day: '04/18', conversations: 87, users: 65 },
+  { day: '04/19', conversations: 74, users: 55 },
+  { day: '04/20', conversations: 69, users: 50 },
+  { day: '04/21', conversations: 65, users: 47 },
+  { day: '04/22', conversations: 73, users: 54 },
+  { day: '04/23', conversations: 77, users: 58 },
+  { day: '04/24', conversations: 82, users: 62 },
+  { day: '04/25', conversations: 89, users: 68 },
+  { day: '04/26', conversations: 95, users: 71 },
+  { day: '04/27', conversations: 88, users: 65 },
+  { day: '04/28', conversations: 79, users: 60 },
+  { day: '04/29', conversations: 83, users: 62 },
+  { day: '04/30', conversations: 90, users: 67 },
+];
+
+// Time distribution data
+const timeDistribution = [
+  { time: '12am', value: 15 },
+  { time: '2am', value: 8 },
+  { time: '4am', value: 5 },
+  { time: '6am', value: 12 },
+  { time: '8am', value: 35 },
+  { time: '10am', value: 68 },
+  { time: '12pm', value: 72 },
+  { time: '2pm', value: 98 },
+  { time: '4pm', value: 85 },
+  { time: '6pm', value: 65 },
+  { time: '8pm', value: 48 },
+  { time: '10pm', value: 30 },
+];
+
+const AnalyticsDashboard = () => {
+  const [timeRange, setTimeRange] = useState('30days');
+  const [showInsights, setShowInsights] = useState(true);
+  
+  return (
+    <DashboardLayout>
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-2xl font-bold text-askforge-gray-900">Analytics</h1>
+          <p className="text-askforge-gray-500">Track your chatbot performance and user interactions</p>
+        </div>
+        
+        {/* Summary Stats */}
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+          <Card className="overflow-hidden hover:shadow-md transition-shadow duration-300 bg-gradient-to-br from-white to-askforge-gray-50 border border-askforge-gray-100 animate-fade-in">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">
+                Total Conversations
+              </CardTitle>
+              <div className="h-8 w-8 rounded-full bg-askforge-blue/10 flex items-center justify-center">
+                <MessageSquare className="h-4 w-4 text-askforge-blue" />
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">2,045</div>
+              <p className="text-xs text-muted-foreground flex items-center gap-1">
+                <TrendingUp className="text-secondary h-3 w-3" /> +24% from last month
+              </p>
+            </CardContent>
+          </Card>
+          
+          <Card className="overflow-hidden hover:shadow-md transition-shadow duration-300 bg-gradient-to-br from-white to-askforge-gray-50 border border-askforge-gray-100 animate-fade-in" style={{ animationDelay: "50ms" }}>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">
+                Positive Feedback
+              </CardTitle>
+              <div className="h-8 w-8 rounded-full bg-secondary/10 flex items-center justify-center">
+                <ThumbsUp className="h-4 w-4 text-secondary" />
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">92%</div>
+              <p className="text-xs text-muted-foreground">
+                346 positive ratings
+              </p>
+            </CardContent>
+          </Card>
+          
+          <Card className="overflow-hidden hover:shadow-md transition-shadow duration-300 bg-gradient-to-br from-white to-askforge-gray-50 border border-askforge-gray-100 animate-fade-in" style={{ animationDelay: "100ms" }}>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">
+                Negative Feedback
+              </CardTitle>
+              <div className="h-8 w-8 rounded-full bg-destructive/10 flex items-center justify-center">
+                <ThumbsDown className="h-4 w-4 text-destructive" />
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">8%</div>
+              <p className="text-xs text-muted-foreground">
+                30 negative ratings
+              </p>
+            </CardContent>
+          </Card>
+          
+          <Card className="overflow-hidden hover:shadow-md transition-shadow duration-300 bg-gradient-to-br from-white to-askforge-gray-50 border border-askforge-gray-100 animate-fade-in" style={{ animationDelay: "150ms" }}>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">
+                Unique Users
+              </CardTitle>
+              <div className="h-8 w-8 rounded-full bg-accent/10 flex items-center justify-center">
+                <Users className="h-4 w-4 text-accent" />
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">863</div>
+              <p className="text-xs text-muted-foreground flex items-center gap-1">
+                <TrendingUp className="text-secondary h-3 w-3" /> +12% from last month
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+        
+        {/* Main Analytics - Conversation Trends (Redesigned) */}
+        <Card className="overflow-hidden border shadow-card animate-fade-in">
+          <CardHeader className="bg-gradient-to-r from-askforge-blue/5 to-askforge-blue/10 border-b">
+            <div className="flex justify-between items-center">
+              <div>
+                <CardTitle className="flex items-center gap-2 text-lg font-bold">
+                  <BarChart2 className="h-5 w-5 text-askforge-blue" />
+                  Conversation Trends
+                </CardTitle>
+                <CardDescription className="text-askforge-gray-600 mt-1">
+                  View trends over time for all your chatbots
+                </CardDescription>
+              </div>
+              
+              <div className="flex items-center gap-2">
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline" size="sm" className="text-xs gap-1">
+                      <Calendar className="h-3 w-3" />
+                      {timeRange === '7days' ? 'Last 7 days' : 
+                       timeRange === '14days' ? 'Last 14 days' : 
+                       timeRange === '30days' ? 'Last 30 days' : 
+                       'Custom Range'}
+                      <ChevronDown className="h-3 w-3 ml-1" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-36">
+                    <DropdownMenuItem onClick={() => setTimeRange('7days')}>
+                      Last 7 days
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => setTimeRange('14days')}>
+                      Last 14 days
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => setTimeRange('30days')}>
+                      Last 30 days
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+                
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className="text-askforge-gray-500 hover:text-askforge-gray-700"
+                  onClick={() => setShowInsights(!showInsights)}
+                >
+                  {showInsights ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                </Button>
+                
+                <Button variant="ghost" size="icon" className="text-askforge-gray-500 hover:text-askforge-blue">
+                  <RefreshCw className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+          </CardHeader>
+          
+          <CardContent className="p-6">
+            <div className="flex flex-col gap-6">
+              {/* Interactive Chart */}
+              <div className="h-[350px] bg-white rounded-xl overflow-hidden border shadow-sm flex flex-col">
+                <div className="px-6 py-3 bg-white border-b flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-2">
+                      <div className="h-3 w-3 rounded-full bg-askforge-blue"></div>
+                      <span className="text-sm font-medium">Conversations</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="h-3 w-3 rounded-full bg-askforge-purple opacity-60"></div>
+                      <span className="text-sm font-medium">Users</span>
+                    </div>
+                  </div>
+                  <div className="text-xs text-askforge-gray-500">
+                    April 1 - April 30, 2025
+                  </div>
+                </div>
+                
+                <div className="flex-1 p-4">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <AreaChart
+                      data={conversationData}
+                      margin={{ top: 10, right: 30, left: 0, bottom: 5 }}
+                    >
+                      <defs>
+                        <linearGradient id="colorConversations" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#3B82F6" stopOpacity={0.8}/>
+                          <stop offset="95%" stopColor="#3B82F6" stopOpacity={0.1}/>
+                        </linearGradient>
+                        <linearGradient id="colorUsers" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#8B5CF6" stopOpacity={0.8}/>
+                          <stop offset="95%" stopColor="#8B5CF6" stopOpacity={0.1}/>
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
+                      <XAxis 
+                        dataKey="day" 
+                        tick={{ fontSize: 12 }} 
+                        tickLine={false}
+                        axisLine={{ stroke: '#f0f0f0' }}
+                        interval="preserveStartEnd"
+                      />
+                      <YAxis 
+                        tick={{ fontSize: 12 }} 
+                        tickLine={false}
+                        axisLine={false}
+                        tickFormatter={(value) => `${value}`}
+                      />
+                      <Tooltip
+                        contentStyle={{ 
+                          borderRadius: '8px', 
+                          border: '1px solid #e2e8f0', 
+                          boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)', 
+                          padding: '8px 12px',
+                          fontSize: '12px'
+                        }}
+                        formatter={(value, name) => {
+                          return [value, name === 'conversations' ? 'Conversations' : 'Unique Users']
+                        }}
+                        labelFormatter={(label) => `Date: ${label}`}
+                      />
+                      <Area 
+                        type="monotone" 
+                        dataKey="conversations" 
+                        stroke="#3B82F6" 
+                        strokeWidth={2}
+                        fillOpacity={1}
+                        fill="url(#colorConversations)" 
+                        activeDot={{ r: 6, strokeWidth: 0 }}
+                      />
+                      <Area 
+                        type="monotone" 
+                        dataKey="users" 
+                        stroke="#8B5CF6" 
+                        strokeWidth={2}
+                        fillOpacity={0.6}
+                        fill="url(#colorUsers)"
+                        activeDot={{ r: 6, strokeWidth: 0 }}
+                      />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+              
+              {/* Insights Cards */}
+              {showInsights && (
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 animate-fade-in">
+                  <Card className="bg-gradient-to-br from-askforge-gray-50 to-white hover:shadow-md transition-shadow duration-300 border border-askforge-gray-100">
+                    <CardHeader className="pb-2">
+                      <CardTitle className="text-sm font-medium flex items-center gap-2">
+                        <Clock className="h-4 w-4 text-askforge-purple" />
+                        Peak Activity Times
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="text-xl font-bold">2-4 PM</div>
+                      <p className="text-xs text-muted-foreground mb-3">
+                        Users are most active during afternoons
+                      </p>
+                      
+                      <div className="h-[60px]">
+                        <ResponsiveContainer width="100%" height="100%">
+                          <BarChart data={timeDistribution} barCategoryGap={1}>
+                            <defs>
+                              <linearGradient id="colorActivity" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="0%" stopColor="#8B5CF6" stopOpacity={0.8}/>
+                                <stop offset="100%" stopColor="#8B5CF6" stopOpacity={0.3}/>
+                              </linearGradient>
+                            </defs>
+                            <Bar 
+                              dataKey="value" 
+                              fill="url(#colorActivity)" 
+                              radius={[2, 2, 0, 0]}
+                            />
+                          </BarChart>
+                        </ResponsiveContainer>
+                      </div>
+                    </CardContent>
+                  </Card>
+                  
+                  <Card className="bg-gradient-to-br from-askforge-gray-50 to-white hover:shadow-md transition-shadow duration-300 border border-askforge-gray-100">
+                    <CardHeader className="pb-2">
+                      <CardTitle className="text-sm font-medium flex items-center gap-2">
+                        <Clock className="h-4 w-4 text-secondary" />
+                        Session Engagement
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="text-xl font-bold">4m 12s</div>
+                      <p className="text-xs text-muted-foreground mb-2">
+                        Average conversation duration
+                      </p>
+                      
+                      <div className="flex flex-col gap-2 mt-3">
+                        <div className="flex justify-between items-center text-xs">
+                          <span className="text-askforge-gray-500">0-1 min</span>
+                          <span className="font-medium">12%</span>
+                        </div>
+                        <div className="h-1.5 w-full bg-askforge-gray-100 rounded-full overflow-hidden">
+                          <div className="h-full bg-secondary rounded-full" style={{ width: '12%' }}></div>
+                        </div>
+                        
+                        <div className="flex justify-between items-center text-xs">
+                          <span className="text-askforge-gray-500">1-5 min</span>
+                          <span className="font-medium">58%</span>
+                        </div>
+                        <div className="h-1.5 w-full bg-askforge-gray-100 rounded-full overflow-hidden">
+                          <div className="h-full bg-secondary rounded-full" style={{ width: '58%' }}></div>
+                        </div>
+                        
+                        <div className="flex justify-between items-center text-xs">
+                          <span className="text-askforge-gray-500">5+ min</span>
+                          <span className="font-medium">30%</span>
+                        </div>
+                        <div className="h-1.5 w-full bg-askforge-gray-100 rounded-full overflow-hidden">
+                          <div className="h-full bg-secondary rounded-full" style={{ width: '30%' }}></div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                  
+                  <Card className="bg-gradient-to-br from-askforge-gray-50 to-white hover:shadow-md transition-shadow duration-300 border border-askforge-gray-100">
+                    <CardHeader className="pb-2">
+                      <CardTitle className="text-sm font-medium flex items-center gap-2">
+                        <MessageSquare className="h-4 w-4 text-accent" />
+                        Interaction Depth
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="text-xl font-bold">3.7</div>
+                      <p className="text-xs text-muted-foreground mb-3">
+                        Messages per conversation
+                      </p>
+                      
+                      <div className="space-y-2">
+                        <div className="text-xs text-askforge-gray-700 flex justify-between">
+                          <span>Conversation depth</span>
+                          <span className="font-medium">Good</span>
+                        </div>
+                        <div className="h-2 w-full bg-askforge-gray-100 rounded-full overflow-hidden">
+                          <div className="h-full rounded-full" 
+                               style={{ 
+                                 width: '75%', 
+                                 background: 'linear-gradient(to right, #10B981, #8B5CF6)' 
+                               }}></div>
+                        </div>
+                        
+                        <div className="flex justify-between items-center mt-3">
+                          <Button variant="ghost" size="sm" className="text-xs text-askforge-blue flex items-center">
+                            View detailed report
+                            <ArrowRight className="ml-1 h-3 w-3" />
+                          </Button>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+        
+        {/* Detailed Analytics */}
+        <Tabs defaultValue="conversations" className="animate-fade-in">
+          <TabsList className="grid w-full grid-cols-3">
+            <TabsTrigger value="conversations">Conversations</TabsTrigger>
+            <TabsTrigger value="feedback">User Feedback</TabsTrigger>
+            <TabsTrigger value="queries">Popular Queries</TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="conversations">
+            <Card>
+              <CardHeader>
+                <CardTitle>Conversations by Chatbot</CardTitle>
+                <CardDescription>
+                  Compare usage across different chatbot instances
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="h-[250px] flex items-center justify-center bg-askforge-gray-100 rounded-md">
+                  <p className="text-askforge-gray-500">Conversations chart will display here</p>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+          
+          <TabsContent value="feedback">
+            <Card>
+              <CardHeader>
+                <CardTitle>User Satisfaction</CardTitle>
+                <CardDescription>
+                  Analyze user feedback and satisfaction metrics
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="h-[250px] flex items-center justify-center bg-askforge-gray-100 rounded-md">
+                  <p className="text-askforge-gray-500">Feedback chart will display here</p>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+          
+          <TabsContent value="queries">
+            <Card>
+              <CardHeader>
+                <CardTitle>Most Common Queries</CardTitle>
+                <CardDescription>
+                  See what questions users are asking most frequently
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="p-4 bg-askforge-gray-50 rounded-lg flex items-start">
+                    <HelpCircle className="h-5 w-5 text-askforge-blue mr-3 mt-0.5" />
+                    <div>
+                      <p className="font-medium">How do I reset my password?</p>
+                      <p className="text-sm text-askforge-gray-500">Asked 42 times</p>
+                    </div>
+                  </div>
+                  
+                  <div className="p-4 bg-askforge-gray-50 rounded-lg flex items-start">
+                    <HelpCircle className="h-5 w-5 text-askforge-blue mr-3 mt-0.5" />
+                    <div>
+                      <p className="font-medium">What are your pricing plans?</p>
+                      <p className="text-sm text-askforge-gray-500">Asked 38 times</p>
+                    </div>
+                  </div>
+                  
+                  <div className="p-4 bg-askforge-gray-50 rounded-lg flex items-start">
+                    <HelpCircle className="h-5 w-5 text-askforge-blue mr-3 mt-0.5" />
+                    <div>
+                      <p className="font-medium">How do I update my billing information?</p>
+                      <p className="text-sm text-askforge-gray-500">Asked 29 times</p>
+                    </div>
+                  </div>
+                  
+                  <div className="p-4 bg-askforge-gray-50 rounded-lg flex items-start">
+                    <HelpCircle className="h-5 w-5 text-askforge-blue mr-3 mt-0.5" />
+                    <div>
+                      <p className="font-medium">Is there a free trial available?</p>
+                      <p className="text-sm text-askforge-gray-500">Asked 24 times</p>
+                    </div>
+                  </div>
+                  
+                  <div className="p-4 bg-askforge-gray-50 rounded-lg flex items-start">
+                    <HelpCircle className="h-5 w-5 text-askforge-blue mr-3 mt-0.5" />
+                    <div>
+                      <p className="font-medium">How do I contact customer support?</p>
+                      <p className="text-sm text-askforge-gray-500">Asked 19 times</p>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="mt-4 text-center">
+                  <Button variant="outline">View All Queries</Button>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
+      </div>
+    </DashboardLayout>
+  );
+};
+
+export default AnalyticsDashboard;
