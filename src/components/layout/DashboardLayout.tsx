@@ -13,6 +13,7 @@ import {
   Home
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useTheme } from '@/components/theme/ThemeProvider';
 
 type SidebarLinkProps = {
   to: string;
@@ -27,7 +28,9 @@ const SidebarLink = ({ to, icon: Icon, children, isActive }: SidebarLinkProps) =
       variant="ghost" 
       className={cn(
         "w-full justify-start mb-1", 
-        isActive ? "bg-chatcanvas-blue/10 text-chatcanvas-blue" : ""
+        isActive 
+          ? "bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary-foreground" 
+          : "text-muted-foreground hover:text-foreground dark:text-muted-foreground dark:hover:text-primary-foreground"
       )}
     >
       <Icon className="mr-2 h-5 w-5" />
@@ -39,26 +42,27 @@ const SidebarLink = ({ to, icon: Icon, children, isActive }: SidebarLinkProps) =
 const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
   const [sidebarOpen, setSidebarOpen] = React.useState(true);
   const location = useLocation();
+  const { theme } = useTheme();
   
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-background dark:bg-background">
       <Navbar isLoggedIn={true} />
       
       <div className="flex-1 flex">
         {/* Sidebar */}
         <aside 
           className={cn(
-            "w-64 border-r bg-white p-4 transition-all duration-300 ease-in-out",
+            "w-64 border-r border-border bg-card dark:bg-card p-4 transition-all duration-300 ease-in-out",
             !sidebarOpen && "-ml-64"
           )}
         >
           <div className="mb-8 flex justify-between items-center">
-            <h2 className="font-semibold text-lg">Dashboard</h2>
+            <h2 className="font-semibold text-lg text-foreground dark:text-foreground">Dashboard</h2>
             <Button 
               variant="ghost" 
               size="icon" 
               onClick={() => setSidebarOpen(false)}
-              className="md:hidden"
+              className="md:hidden text-muted-foreground dark:text-muted-foreground"
             >
               <X className="h-5 w-5" />
             </Button>
@@ -66,7 +70,7 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
           
           <nav className="space-y-6">
             <div>
-              <h3 className="text-sm uppercase text-chatcanvas-gray-500 mb-2">Main</h3>
+              <h3 className="text-sm uppercase text-muted-foreground dark:text-muted-foreground mb-2">Main</h3>
               <div className="space-y-1">
                 <SidebarLink 
                   to="/dashboard" 
@@ -93,7 +97,7 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
             </div>
             
             <div>
-              <h3 className="text-sm uppercase text-chatcanvas-gray-500 mb-2">Insights</h3>
+              <h3 className="text-sm uppercase text-muted-foreground dark:text-muted-foreground mb-2">Insights</h3>
               <div className="space-y-1">
                 <SidebarLink 
                   to="/dashboard/analytics" 
@@ -106,7 +110,7 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
             </div>
             
             <div>
-              <h3 className="text-sm uppercase text-chatcanvas-gray-500 mb-2">Settings</h3>
+              <h3 className="text-sm uppercase text-muted-foreground dark:text-muted-foreground mb-2">Settings</h3>
               <div className="space-y-1">
                 <SidebarLink 
                   to="/dashboard/settings" 
@@ -121,13 +125,13 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
         </aside>
         
         {/* Main Content */}
-        <main className="flex-1 bg-chatcanvas-gray-50 p-6">
+        <main className="flex-1 bg-background dark:bg-background/50 p-6 overflow-auto">
           {!sidebarOpen && (
             <Button
               variant="outline"
               size="icon"
               onClick={() => setSidebarOpen(true)}
-              className="mb-4"
+              className="mb-4 bg-card dark:bg-card/80"
             >
               <Menu className="h-5 w-5" />
             </Button>

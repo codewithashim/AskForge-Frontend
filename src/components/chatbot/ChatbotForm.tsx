@@ -30,7 +30,8 @@ import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
 import ChatPreview from './ChatPreview';
 import EmbedCode from './EmbedCode';
-import { FileText, PlusCircle, Upload } from 'lucide-react';
+import ThemeCustomizer from './ThemeCustomizer';
+import { FileText, PlusCircle, Upload, Palette, MessageCircle, Settings2, Sparkles } from 'lucide-react';
 
 // Mock knowledge base files for demonstration
 const mockKnowledgeFiles = [
@@ -65,6 +66,17 @@ const ChatbotForm = ({ existingBot = null }: { existingBot?: any }) => {
     showTypingIndicator: existingBot?.showTypingIndicator !== false,
     chatHeaderText: existingBot?.chatHeaderText || 'AskForge Assistant',
     knowledgeBaseId: existingBot?.knowledgeBaseId || null,
+    position: existingBot?.position || 'bottom-right',
+    allowAttachments: existingBot?.allowAttachments || false,
+    allowVoiceInput: existingBot?.allowVoiceInput || false,
+    showEmojiPicker: existingBot?.showEmojiPicker || false,
+    messageBubbleStyle: existingBot?.messageBubbleStyle || 'default',
+    userBubbleColor: existingBot?.userBubbleColor || '#3B82F6',
+    botBubbleColor: existingBot?.botBubbleColor || '#f3f4f6',
+    inputStyle: existingBot?.inputStyle || 'default',
+    showTimestamp: existingBot?.showTimestamp || false,
+    animationStyle: existingBot?.animationStyle || 'fade',
+    darkMode: existingBot?.darkMode || false,
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -111,10 +123,10 @@ const ChatbotForm = ({ existingBot = null }: { existingBot?: any }) => {
   return (
     <div className="animate-fade-in">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-askforge-gray-900">
+        <h1 className="text-2xl font-bold text-askforge-gray-900 dark:text-white">
           {existingBot ? 'Edit Chatbot' : 'Create Chatbot'}
         </h1>
-        <p className="text-askforge-gray-500">
+        <p className="text-askforge-gray-500 dark:text-gray-400">
           {existingBot 
             ? 'Update your chatbot settings' 
             : 'Configure your new chatbot instance'
@@ -124,20 +136,36 @@ const ChatbotForm = ({ existingBot = null }: { existingBot?: any }) => {
       
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="lg:col-span-2">
-          <Card className="transition-all duration-300 hover:shadow-md">
+          <Card className="transition-all duration-300 hover:shadow-md dark:bg-gray-800 dark:border-gray-700">
             <CardHeader>
-              <CardTitle>Chatbot Configuration</CardTitle>
-              <CardDescription>
+              <CardTitle className="dark:text-white">Chatbot Configuration</CardTitle>
+              <CardDescription className="dark:text-gray-400">
                 Customize your chatbot's appearance and behavior
               </CardDescription>
             </CardHeader>
             <CardContent>
               <Tabs value={activeTab} onValueChange={setActiveTab}>
-                <TabsList className="grid w-full grid-cols-4 mb-6">
-                  <TabsTrigger value="basic">Basic Info</TabsTrigger>
-                  <TabsTrigger value="appearance">Appearance</TabsTrigger>
-                  <TabsTrigger value="knowledge">Knowledge</TabsTrigger>
-                  <TabsTrigger value="advanced">Advanced</TabsTrigger>
+                <TabsList className="grid w-full grid-cols-5 mb-6">
+                  <TabsTrigger value="basic" className="flex items-center gap-1">
+                    <MessageCircle className="h-4 w-4" />
+                    <span className="hidden sm:inline">Basic Info</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="appearance" className="flex items-center gap-1">
+                    <Palette className="h-4 w-4" />
+                    <span className="hidden sm:inline">Appearance</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="theme" className="flex items-center gap-1">
+                    <Sparkles className="h-4 w-4" />
+                    <span className="hidden sm:inline">Theme</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="knowledge" className="flex items-center gap-1">
+                    <FileText className="h-4 w-4" />
+                    <span className="hidden sm:inline">Knowledge</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="advanced" className="flex items-center gap-1">
+                    <Settings2 className="h-4 w-4" />
+                    <span className="hidden sm:inline">Advanced</span>
+                  </TabsTrigger>
                 </TabsList>
                 
                 <TabsContent value="basic" className="space-y-4">
@@ -149,6 +177,7 @@ const ChatbotForm = ({ existingBot = null }: { existingBot?: any }) => {
                       placeholder="e.g., Customer Support Bot"
                       value={chatbot.name}
                       onChange={handleChange}
+                      className="dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                     />
                   </div>
                   
@@ -161,6 +190,7 @@ const ChatbotForm = ({ existingBot = null }: { existingBot?: any }) => {
                       value={chatbot.description}
                       onChange={handleChange}
                       rows={3}
+                      className="dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                     />
                   </div>
                   
@@ -170,14 +200,33 @@ const ChatbotForm = ({ existingBot = null }: { existingBot?: any }) => {
                       value={chatbot.type} 
                       onValueChange={(value) => handleSelectChange('type', value)}
                     >
-                      <SelectTrigger id="type">
+                      <SelectTrigger id="type" className="dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                         <SelectValue placeholder="Select interface type" />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent className="dark:bg-gray-800 dark:border-gray-700">
                         <SelectItem value="bubble">Bubble Chat</SelectItem>
                         <SelectItem value="inline">Inline Embedded</SelectItem>
                         <SelectItem value="fullscreen">Full Screen</SelectItem>
                         <SelectItem value="sidebar">Sidebar Chat</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="position">Position (for Bubble Chat)</Label>
+                    <Select 
+                      value={chatbot.position} 
+                      onValueChange={(value) => handleSelectChange('position', value)}
+                      disabled={chatbot.type !== 'bubble'}
+                    >
+                      <SelectTrigger id="position" className="dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                        <SelectValue placeholder="Select position" />
+                      </SelectTrigger>
+                      <SelectContent className="dark:bg-gray-800 dark:border-gray-700">
+                        <SelectItem value="bottom-right">Bottom Right</SelectItem>
+                        <SelectItem value="bottom-left">Bottom Left</SelectItem>
+                        <SelectItem value="top-right">Top Right</SelectItem>
+                        <SelectItem value="top-left">Top Left</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -190,6 +239,7 @@ const ChatbotForm = ({ existingBot = null }: { existingBot?: any }) => {
                       placeholder="Name displayed in chat header"
                       value={chatbot.chatHeaderText}
                       onChange={handleChange}
+                      className="dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                     />
                   </div>
                   
@@ -202,6 +252,7 @@ const ChatbotForm = ({ existingBot = null }: { existingBot?: any }) => {
                       value={chatbot.welcomeMessage}
                       onChange={handleChange}
                       rows={2}
+                      className="dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                     />
                   </div>
                 </TabsContent>
@@ -217,14 +268,14 @@ const ChatbotForm = ({ existingBot = null }: { existingBot?: any }) => {
                           type="color"
                           value={chatbot.primaryColor}
                           onChange={handleChange}
-                          className="w-12 h-10 p-1"
+                          className="w-12 h-10 p-1 dark:bg-gray-700 dark:border-gray-600"
                         />
                         <Input
                           type="text"
                           value={chatbot.primaryColor}
                           onChange={handleChange}
                           name="primaryColor"
-                          className="flex-1"
+                          className="flex-1 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                         />
                       </div>
                     </div>
@@ -238,14 +289,14 @@ const ChatbotForm = ({ existingBot = null }: { existingBot?: any }) => {
                           type="color"
                           value={chatbot.secondaryColor}
                           onChange={handleChange}
-                          className="w-12 h-10 p-1"
+                          className="w-12 h-10 p-1 dark:bg-gray-700 dark:border-gray-600"
                         />
                         <Input
                           type="text"
                           value={chatbot.secondaryColor}
                           onChange={handleChange}
                           name="secondaryColor"
-                          className="flex-1"
+                          className="flex-1 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                         />
                       </div>
                     </div>
@@ -258,10 +309,10 @@ const ChatbotForm = ({ existingBot = null }: { existingBot?: any }) => {
                         value={chatbot.fontFamily} 
                         onValueChange={(value) => handleSelectChange('fontFamily', value)}
                       >
-                        <SelectTrigger id="fontFamily">
+                        <SelectTrigger id="fontFamily" className="dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                           <SelectValue placeholder="Select font family" />
                         </SelectTrigger>
-                        <SelectContent>
+                        <SelectContent className="dark:bg-gray-800 dark:border-gray-700">
                           <SelectItem value="Inter">Inter (Sans-serif)</SelectItem>
                           <SelectItem value="Roboto">Roboto (Sans-serif)</SelectItem>
                           <SelectItem value="Merriweather">Merriweather (Serif)</SelectItem>
@@ -276,10 +327,10 @@ const ChatbotForm = ({ existingBot = null }: { existingBot?: any }) => {
                         value={chatbot.fontSize} 
                         onValueChange={(value) => handleSelectChange('fontSize', value)}
                       >
-                        <SelectTrigger id="fontSize">
+                        <SelectTrigger id="fontSize" className="dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                           <SelectValue placeholder="Select font size" />
                         </SelectTrigger>
-                        <SelectContent>
+                        <SelectContent className="dark:bg-gray-800 dark:border-gray-700">
                           <SelectItem value="small">Small</SelectItem>
                           <SelectItem value="medium">Medium</SelectItem>
                           <SelectItem value="large">Large</SelectItem>
@@ -294,10 +345,10 @@ const ChatbotForm = ({ existingBot = null }: { existingBot?: any }) => {
                       value={chatbot.borderRadius} 
                       onValueChange={(value) => handleSelectChange('borderRadius', value)}
                     >
-                      <SelectTrigger id="borderRadius">
+                      <SelectTrigger id="borderRadius" className="dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                         <SelectValue placeholder="Select border radius style" />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent className="dark:bg-gray-800 dark:border-gray-700">
                         <SelectItem value="square">Square Corners</SelectItem>
                         <SelectItem value="rounded">Slightly Rounded</SelectItem>
                         <SelectItem value="full">Fully Rounded</SelectItem>
@@ -325,18 +376,149 @@ const ChatbotForm = ({ existingBot = null }: { existingBot?: any }) => {
                         placeholder="https://example.com/logo.png"
                         value={chatbot.logoUrl}
                         onChange={handleChange}
+                        className="dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                       />
-                      <p className="text-xs text-askforge-gray-500">
+                      <p className="text-xs text-askforge-gray-500 dark:text-gray-400">
                         Recommended size: 150x150px, transparent background
                       </p>
                     </div>
                   )}
+                  
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <Label htmlFor="darkMode">Dark Mode</Label>
+                      <Switch
+                        id="darkMode"
+                        checked={chatbot.darkMode}
+                        onCheckedChange={(checked) => handleSwitchChange('darkMode', checked)}
+                      />
+                    </div>
+                    <p className="text-xs text-askforge-gray-500 dark:text-gray-400">
+                      Enable dark mode for the chatbot interface
+                    </p>
+                  </div>
+                </TabsContent>
+                
+                <TabsContent value="theme" className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="messageBubbleStyle">Message Bubble Style</Label>
+                    <Select 
+                      value={chatbot.messageBubbleStyle} 
+                      onValueChange={(value) => handleSelectChange('messageBubbleStyle', value)}
+                    >
+                      <SelectTrigger id="messageBubbleStyle" className="dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                        <SelectValue placeholder="Select message style" />
+                      </SelectTrigger>
+                      <SelectContent className="dark:bg-gray-800 dark:border-gray-700">
+                        <SelectItem value="default">Default</SelectItem>
+                        <SelectItem value="modern">Modern (Shadow)</SelectItem>
+                        <SelectItem value="minimal">Minimal</SelectItem>
+                        <SelectItem value="outlined">Outlined</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="userBubbleColor">User Message Color</Label>
+                      <div className="flex space-x-2">
+                        <Input
+                          id="userBubbleColor"
+                          name="userBubbleColor"
+                          type="color"
+                          value={chatbot.userBubbleColor}
+                          onChange={handleChange}
+                          className="w-12 h-10 p-1 dark:bg-gray-700 dark:border-gray-600"
+                        />
+                        <Input
+                          type="text"
+                          value={chatbot.userBubbleColor}
+                          onChange={handleChange}
+                          name="userBubbleColor"
+                          className="flex-1 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                        />
+                      </div>
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="botBubbleColor">Bot Message Color</Label>
+                      <div className="flex space-x-2">
+                        <Input
+                          id="botBubbleColor"
+                          name="botBubbleColor"
+                          type="color"
+                          value={chatbot.botBubbleColor}
+                          onChange={handleChange}
+                          className="w-12 h-10 p-1 dark:bg-gray-700 dark:border-gray-600"
+                        />
+                        <Input
+                          type="text"
+                          value={chatbot.botBubbleColor}
+                          onChange={handleChange}
+                          name="botBubbleColor"
+                          className="flex-1 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="inputStyle">Input Field Style</Label>
+                    <Select 
+                      value={chatbot.inputStyle} 
+                      onValueChange={(value) => handleSelectChange('inputStyle', value)}
+                    >
+                      <SelectTrigger id="inputStyle" className="dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                        <SelectValue placeholder="Select input style" />
+                      </SelectTrigger>
+                      <SelectContent className="dark:bg-gray-800 dark:border-gray-700">
+                        <SelectItem value="default">Default</SelectItem>
+                        <SelectItem value="modern">Modern</SelectItem>
+                        <SelectItem value="minimal">Minimal</SelectItem>
+                        <SelectItem value="outlined">Outlined</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="animationStyle">Animation Style</Label>
+                    <Select 
+                      value={chatbot.animationStyle} 
+                      onValueChange={(value) => handleSelectChange('animationStyle', value)}
+                    >
+                      <SelectTrigger id="animationStyle" className="dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                        <SelectValue placeholder="Select animation style" />
+                      </SelectTrigger>
+                      <SelectContent className="dark:bg-gray-800 dark:border-gray-700">
+                        <SelectItem value="fade">Fade In</SelectItem>
+                        <SelectItem value="bounce">Bounce</SelectItem>
+                        <SelectItem value="pulse">Pulse</SelectItem>
+                        <SelectItem value="slide">Slide</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <Label htmlFor="showTimestamp">Show Message Timestamps</Label>
+                      <Switch
+                        id="showTimestamp"
+                        checked={chatbot.showTimestamp}
+                        onCheckedChange={(checked) => handleSwitchChange('showTimestamp', checked)}
+                      />
+                    </div>
+                  </div>
+                  
+                  <ThemeCustomizer 
+                    config={chatbot} 
+                    onChange={(newConfig) => setChatbot(prevConfig => ({...prevConfig, ...newConfig}))} 
+                  />
                 </TabsContent>
                 
                 <TabsContent value="knowledge" className="space-y-4">
                   <div className="space-y-2 mb-4">
                     <Label>Knowledge Base</Label>
-                    <p className="text-sm text-askforge-gray-500 mb-3">
+                    <p className="text-sm text-askforge-gray-500 dark:text-gray-400 mb-3">
                       Select a knowledge base to power your chatbot's responses
                     </p>
                     
@@ -344,22 +526,24 @@ const ChatbotForm = ({ existingBot = null }: { existingBot?: any }) => {
                       {mockKnowledgeFiles.map((kb) => (
                         <div 
                           key={kb.id}
-                          className={`border rounded-lg p-4 cursor-pointer transition-all duration-200 hover:bg-askforge-gray-50 ${
-                            selectedKnowledgeBase === kb.id ? 'border-askforge-blue bg-askforge-blue/5 ring-1 ring-askforge-blue' : ''
+                          className={`border rounded-lg p-4 cursor-pointer transition-all duration-200 hover:bg-askforge-gray-50 dark:hover:bg-gray-700 ${
+                            selectedKnowledgeBase === kb.id 
+                              ? 'border-askforge-blue bg-askforge-blue/5 ring-1 ring-askforge-blue dark:bg-blue-900/30 dark:border-blue-700' 
+                              : 'dark:border-gray-700'
                           }`}
                           onClick={() => handleKnowledgeBaseSelect(kb.id)}
                         >
                           <div className="flex items-center">
-                            <FileText className="h-8 w-8 text-askforge-gray-400 mr-3" />
+                            <FileText className="h-8 w-8 text-askforge-gray-400 dark:text-gray-300 mr-3" />
                             <div className="flex-1">
-                              <h4 className="font-medium">{kb.name}</h4>
-                              <p className="text-sm text-askforge-gray-500">{kb.fileCount} file{kb.fileCount !== 1 ? 's' : ''}</p>
+                              <h4 className="font-medium dark:text-white">{kb.name}</h4>
+                              <p className="text-sm text-askforge-gray-500 dark:text-gray-400">{kb.fileCount} file{kb.fileCount !== 1 ? 's' : ''}</p>
                             </div>
                           </div>
                         </div>
                       ))}
                       
-                      <Button variant="outline" className="mt-2" onClick={() => navigate('/dashboard/knowledge')}>
+                      <Button variant="outline" className="mt-2 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700" onClick={() => navigate('/dashboard/knowledge')}>
                         <PlusCircle className="h-4 w-4 mr-2" />
                         Create New Knowledge Base
                       </Button>
@@ -374,10 +558,10 @@ const ChatbotForm = ({ existingBot = null }: { existingBot?: any }) => {
                       value={chatbot.modelName} 
                       onValueChange={(value) => handleSelectChange('modelName', value)}
                     >
-                      <SelectTrigger id="modelName">
+                      <SelectTrigger id="modelName" className="dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                         <SelectValue placeholder="Select AI model" />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent className="dark:bg-gray-800 dark:border-gray-700">
                         <SelectItem value="gpt-3.5-turbo">GPT-3.5 Turbo</SelectItem>
                         <SelectItem value="gpt-4">GPT-4</SelectItem>
                         <SelectItem value="claude-2">Claude 2</SelectItem>
@@ -395,8 +579,50 @@ const ChatbotForm = ({ existingBot = null }: { existingBot?: any }) => {
                         onCheckedChange={(checked) => handleSwitchChange('showTypingIndicator', checked)}
                       />
                     </div>
-                    <p className="text-xs text-askforge-gray-500">
+                    <p className="text-xs text-askforge-gray-500 dark:text-gray-400">
                       Show an animation when the chatbot is "typing" a response
+                    </p>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <Label htmlFor="allowAttachments">Allow File Attachments</Label>
+                      <Switch
+                        id="allowAttachments"
+                        checked={chatbot.allowAttachments}
+                        onCheckedChange={(checked) => handleSwitchChange('allowAttachments', checked)}
+                      />
+                    </div>
+                    <p className="text-xs text-askforge-gray-500 dark:text-gray-400">
+                      Enable users to upload files in the chat
+                    </p>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <Label htmlFor="allowVoiceInput">Allow Voice Input</Label>
+                      <Switch
+                        id="allowVoiceInput"
+                        checked={chatbot.allowVoiceInput}
+                        onCheckedChange={(checked) => handleSwitchChange('allowVoiceInput', checked)}
+                      />
+                    </div>
+                    <p className="text-xs text-askforge-gray-500 dark:text-gray-400">
+                      Enable voice messages and speech-to-text
+                    </p>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <Label htmlFor="showEmojiPicker">Show Emoji Picker</Label>
+                      <Switch
+                        id="showEmojiPicker"
+                        checked={chatbot.showEmojiPicker}
+                        onCheckedChange={(checked) => handleSwitchChange('showEmojiPicker', checked)}
+                      />
+                    </div>
+                    <p className="text-xs text-askforge-gray-500 dark:text-gray-400">
+                      Allow users to send emojis easily
                     </p>
                   </div>
                   
@@ -409,7 +635,7 @@ const ChatbotForm = ({ existingBot = null }: { existingBot?: any }) => {
                         onCheckedChange={(checked) => handleSwitchChange('saveConversations', checked)}
                       />
                     </div>
-                    <p className="text-xs text-askforge-gray-500">
+                    <p className="text-xs text-askforge-gray-500 dark:text-gray-400">
                       Store conversation history for analytics and training
                     </p>
                   </div>
@@ -420,10 +646,10 @@ const ChatbotForm = ({ existingBot = null }: { existingBot?: any }) => {
                       value={chatbot.status} 
                       onValueChange={(value) => handleSelectChange('status', value)}
                     >
-                      <SelectTrigger id="status">
+                      <SelectTrigger id="status" className="dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                         <SelectValue placeholder="Select status" />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent className="dark:bg-gray-800 dark:border-gray-700">
                         <SelectItem value="draft">Draft</SelectItem>
                         <SelectItem value="active">Active</SelectItem>
                       </SelectContent>
@@ -432,14 +658,19 @@ const ChatbotForm = ({ existingBot = null }: { existingBot?: any }) => {
                 </TabsContent>
               </Tabs>
             </CardContent>
-            <CardFooter className="flex justify-between border-t pt-6">
+            <CardFooter className="flex justify-between border-t pt-6 dark:border-gray-700">
               <Button 
                 variant="outline" 
                 onClick={() => navigate('/dashboard/chatbots')}
+                className="dark:text-white dark:border-gray-600 dark:hover:bg-gray-700"
               >
                 Cancel
               </Button>
-              <Button onClick={handleSubmit} disabled={isLoading} className="transition-all duration-200 hover:scale-105">
+              <Button 
+                onClick={handleSubmit} 
+                disabled={isLoading} 
+                className="transition-all duration-200 hover:scale-105"
+              >
                 {isLoading 
                   ? (existingBot ? 'Updating...' : 'Creating...') 
                   : (existingBot ? 'Update Chatbot' : 'Create Chatbot')
@@ -450,10 +681,10 @@ const ChatbotForm = ({ existingBot = null }: { existingBot?: any }) => {
         </div>
         
         <div>
-          <Card className="sticky top-6 transition-all duration-300 hover:shadow-md">
+          <Card className="sticky top-6 transition-all duration-300 hover:shadow-md dark:bg-gray-800 dark:border-gray-700">
             <CardHeader>
-              <CardTitle>Preview</CardTitle>
-              <CardDescription>
+              <CardTitle className="dark:text-white">Preview</CardTitle>
+              <CardDescription className="dark:text-gray-400">
                 See how your chatbot will appear
               </CardDescription>
             </CardHeader>
@@ -463,10 +694,10 @@ const ChatbotForm = ({ existingBot = null }: { existingBot?: any }) => {
           </Card>
           
           {existingBot && (
-            <Card className="mt-6 transition-all duration-300 hover:shadow-md">
+            <Card className="mt-6 transition-all duration-300 hover:shadow-md dark:bg-gray-800 dark:border-gray-700">
               <CardHeader>
-                <CardTitle>Embed Code</CardTitle>
-                <CardDescription>
+                <CardTitle className="dark:text-white">Embed Code</CardTitle>
+                <CardDescription className="dark:text-gray-400">
                   Add this chatbot to your website
                 </CardDescription>
               </CardHeader>

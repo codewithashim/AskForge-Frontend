@@ -1,12 +1,14 @@
 
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import Navbar from '@/components/layout/Navbar';
 import { 
-  ArrowRight, Bot, MessageSquare, Database, 
-  Terminal, Code, Upload, BarChart4, CheckCircle, Zap, Shield
+  ArrowRight, Bot, MessageSquare, Database, Terminal, Code, 
+  Upload, BarChart4, CheckCircle, Zap, Shield, Sun, Moon, 
+  Send, ArrowDown, Sparkles, Brain, User
 } from 'lucide-react';
+import { useTheme } from '@/components/theme/ThemeProvider';
 
 // Animate elements when they enter the viewport
 const useIntersectionObserver = (elementRef: React.RefObject<HTMLElement>, threshold = 0.1) => {
@@ -33,64 +35,145 @@ const useIntersectionObserver = (elementRef: React.RefObject<HTMLElement>, thres
   }, [elementRef, threshold]);
 };
 
+// Blob Animation Component
+const AnimatedBlob = ({ className }: { className?: string }) => {
+  return (
+    <div className={`absolute rounded-full mix-blend-multiply filter blur-xl animate-blob-pulse opacity-70 ${className}`}></div>
+  );
+};
+
 // Hero section component
 const Hero = () => {
   const heroRef = useRef<HTMLDivElement>(null);
   useIntersectionObserver(heroRef);
+  const [typedText, setTypedText] = useState("");
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const fullText = "Build AI Chatbots That Understand Your Content";
+  const { theme } = useTheme();
+  
+  useEffect(() => {
+    if (currentIndex < fullText.length) {
+      const timeout = setTimeout(() => {
+        setTypedText(prev => prev + fullText[currentIndex]);
+        setCurrentIndex(prev => prev + 1);
+      }, 100);
+      
+      return () => clearTimeout(timeout);
+    }
+  }, [currentIndex]);
 
   return (
-    <section className="py-20 px-4 bg-gradient-to-b from-white to-askforge-gray-50">
-      <div ref={heroRef} className="container mx-auto text-center max-w-4xl opacity-0">
-        <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight text-askforge-gray-900 tracking-tight">
-          Create & Deploy AI Chatbots <span className="text-askforge-blue">in Minutes</span>
+    <section className="py-20 px-4 relative overflow-hidden">
+      {/* Animated background blobs */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute top-0 -left-40 w-80 h-80 bg-gradient-to-r from-askforge-blue/20 to-askforge-purple/20 rounded-full filter blur-3xl opacity-70 animate-blob"></div>
+        <div className="absolute bottom-0 -right-40 w-80 h-80 bg-gradient-to-r from-askforge-purple/20 to-askforge-green/20 rounded-full filter blur-3xl opacity-70 animate-blob animation-delay-2000"></div>
+        <div className="absolute top-1/3 right-1/4 w-80 h-80 bg-gradient-to-r from-askforge-green/20 to-askforge-blue/20 rounded-full filter blur-3xl opacity-70 animate-blob animation-delay-4000"></div>
+      </div>
+      
+      <div ref={heroRef} className="container mx-auto text-center max-w-5xl opacity-0 relative z-10 animate-fade-in">
+        <div className="inline-block mb-6 px-4 py-2 rounded-full bg-gradient-to-r from-askforge-blue/10 to-askforge-purple/10 dark:from-askforge-blue/20 dark:to-askforge-purple/20 border border-askforge-blue/20 dark:border-askforge-purple/30 backdrop-blur-sm">
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-askforge-blue to-askforge-purple text-sm font-medium flex items-center">
+            <Sparkles className="h-4 w-4 mr-2 text-askforge-blue" />
+            AI-Powered Conversation Platform
+          </span>
+        </div>
+        
+        <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-8 leading-tight tracking-tight relative">
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-askforge-blue via-askforge-purple to-askforge-green">
+            {typedText}
+            <span className={`absolute right-[-4px] top-0 h-full w-[3px] bg-askforge-blue ${currentIndex < fullText.length ? 'animate-blink' : 'opacity-0'}`}></span>
+          </span>
         </h1>
-        <p className="text-xl text-askforge-gray-600 mb-8 max-w-2xl mx-auto">
-          Build intelligent AI chatbots that understand your content and help your customers. 
-          No coding required.
+        
+        <p className="text-xl md:text-2xl text-askforge-gray-600 dark:text-askforge-gray-300 mb-10 max-w-3xl mx-auto leading-relaxed">
+          Create intelligent chatbots trained on your specific data. Deploy anywhere
+          in minutes with no coding required.
         </p>
-        <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <Button size="lg" className="bg-askforge-blue hover:bg-askforge-blue/90 transition-all duration-300 hover:scale-105" asChild>
-            <Link to="/login">
-              Get Started
-              <ArrowRight className="ml-2 h-5 w-5" />
+        
+        <div className="flex flex-col sm:flex-row gap-6 justify-center mb-16">
+          <Button 
+            size="lg" 
+            className="bg-gradient-to-r from-askforge-blue to-askforge-purple hover:opacity-90 text-white text-lg px-8 py-6 rounded-xl shadow-lg shadow-askforge-blue/20 dark:shadow-askforge-purple/20 hover:shadow-xl transition-all duration-300 transform hover:scale-105 animate-pulse-slow" 
+            asChild
+          >
+            <Link to="/signup">
+              Get Started Free
+              <ArrowRight className="ml-2 h-5 w-5 animate-slide-right" />
             </Link>
           </Button>
-          <Button size="lg" variant="outline" className="transition-all duration-300 hover:scale-105" asChild>
+          <Button 
+            size="lg" 
+            variant="outline" 
+            className="border-2 border-askforge-gray-300 dark:border-askforge-gray-700 text-lg px-8 py-6 rounded-xl transition-all duration-300 backdrop-blur-sm bg-white/50 dark:bg-askforge-gray-900/50 hover:bg-white/80 dark:hover:bg-askforge-gray-800/80 hover:scale-105" 
+            asChild
+          >
             <Link to="/login">
-              View Demo
+              Watch Demo
+              <Bot className="ml-2 h-5 w-5" />
             </Link>
           </Button>
         </div>
         
-        <div className="mt-16 bg-white p-8 rounded-2xl shadow-soft transform transition-all duration-500 hover:shadow-lg">
-          <div className="relative w-full h-80 bg-white rounded-lg overflow-hidden border border-askforge-gray-100">
-            <div className="absolute inset-0 bg-gradient-to-b from-transparent to-askforge-blue/5 pointer-events-none"></div>
-            
-            <div className="p-4 h-full flex flex-col">
-              <div className="flex items-center mb-6 border-b pb-2">
-                <Bot className="h-6 w-6 text-askforge-blue mr-2" />
-                <h3 className="font-medium">AskForge Assistant</h3>
+        <div className="relative mx-auto max-w-4xl transform transition-all duration-500 hover:scale-[1.02] hover:shadow-2xl rounded-2xl overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-askforge-blue/30 to-askforge-purple/30 rounded-2xl blur-md opacity-70 group-hover:opacity-100 transition-all duration-500"></div>
+          
+          <div className="relative bg-white dark:bg-askforge-gray-800 rounded-2xl overflow-hidden border border-askforge-gray-200 dark:border-askforge-gray-700 shadow-2xl">            
+            <div className="p-2 h-[460px] flex flex-col">
+              <div className="flex items-center border-b border-askforge-gray-200 dark:border-askforge-gray-700 p-3">
+                <div className="flex space-x-2 mr-4">
+                  <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+                  <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                  <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                </div>
+                <div className="flex items-center flex-1 justify-center">
+                  <Bot className="h-5 w-5 text-askforge-blue mr-2" />
+                  <h3 className="font-medium text-sm text-center">AskForge Assistant</h3>
+                </div>
               </div>
               
-              <div className="space-y-4 overflow-y-auto flex-1 pr-2">
-                <div className="bg-askforge-gray-100 text-askforge-gray-800 p-3 rounded-lg rounded-bl-none max-w-xs animate-scale-in" style={{animationDelay: '0.3s'}}>
-                  Hello! How can I help you today?
+              <div className="flex-1 overflow-y-auto p-4 space-y-4">
+                <div className="flex items-start">
+                  <div className="w-8 h-8 rounded-full bg-askforge-blue/20 flex items-center justify-center mr-3 flex-shrink-0">
+                    <Bot className="h-4 w-4 text-askforge-blue" />
+                  </div>
+                  <div className="bg-askforge-gray-100 dark:bg-askforge-gray-700 text-askforge-gray-800 dark:text-white p-3 rounded-2xl rounded-tl-none max-w-sm animate-scale-in shadow-sm">
+                    <p>Hello! I'm your AI assistant. How can I help you today?</p>
+                  </div>
                 </div>
                 
-                <div className="bg-askforge-blue text-white p-3 rounded-lg rounded-br-none max-w-xs ml-auto animate-scale-in" style={{animationDelay: '1s'}}>
-                  I'd like to learn about your premium plan.
+                <div className="flex items-start justify-end">
+                  <div className="bg-askforge-blue text-white p-3 rounded-2xl rounded-tr-none max-w-sm animate-scale-in shadow-sm" style={{animationDelay: '0.5s'}}>
+                    <p>Can you tell me about your knowledge base features?</p>
+                  </div>
+                  <div className="w-8 h-8 rounded-full bg-askforge-gray-200 dark:bg-askforge-gray-600 flex items-center justify-center ml-3 flex-shrink-0">
+                    <User className="h-4 w-4 text-askforge-gray-600 dark:text-askforge-gray-300" />
+                  </div>
                 </div>
                 
-                <div className="bg-askforge-gray-100 text-askforge-gray-800 p-3 rounded-lg rounded-bl-none max-w-xs animate-scale-in" style={{animationDelay: '1.5s'}}>
-                  Our premium plan includes unlimited chatbot deployments, file uploads up to 100MB, and priority support. Would you like to know more?
+                <div className="flex items-start">
+                  <div className="w-8 h-8 rounded-full bg-askforge-blue/20 flex items-center justify-center mr-3 flex-shrink-0">
+                    <Bot className="h-4 w-4 text-askforge-blue" />
+                  </div>
+                  <div className="bg-askforge-gray-100 dark:bg-askforge-gray-700 text-askforge-gray-800 dark:text-white p-3 rounded-2xl rounded-tl-none max-w-sm animate-scale-in shadow-sm" style={{animationDelay: '1s'}}>
+                    <p>Absolutely! Our knowledge base allows you to upload documents, PDFs, and website content to train your chatbot on your specific information. The AI will understand and reference this content when answering customer questions.</p>
+                  </div>
                 </div>
                 
-                <div className="bg-askforge-blue text-white p-3 rounded-lg rounded-br-none max-w-xs ml-auto animate-scale-in" style={{animationDelay: '2s'}}>
-                  Yes, please tell me about the pricing options.
+                <div className="flex items-start justify-end">
+                  <div className="bg-askforge-blue text-white p-3 rounded-2xl rounded-tr-none max-w-sm animate-scale-in shadow-sm" style={{animationDelay: '1.5s'}}>
+                    <p>That sounds great! How many documents can I upload?</p>
+                  </div>
+                  <div className="w-8 h-8 rounded-full bg-askforge-gray-200 dark:bg-askforge-gray-600 flex items-center justify-center ml-3 flex-shrink-0">
+                    <User className="h-4 w-4 text-askforge-gray-600 dark:text-askforge-gray-300" />
+                  </div>
                 </div>
                 
-                <div className="flex items-center space-x-2 animate-scale-in" style={{animationDelay: '2.5s'}}>
-                  <div className="bg-askforge-gray-100 text-askforge-gray-800 p-3 rounded-lg rounded-bl-none">
+                <div className="flex items-start">
+                  <div className="w-8 h-8 rounded-full bg-askforge-blue/20 flex items-center justify-center mr-3 flex-shrink-0">
+                    <Bot className="h-4 w-4 text-askforge-blue" />
+                  </div>
+                  <div className="bg-askforge-gray-100 dark:bg-askforge-gray-700 text-askforge-gray-800 dark:text-white p-3 rounded-2xl rounded-tl-none max-w-sm animate-fadeIn" style={{animationDelay: '2s'}}>
                     <div className="flex space-x-1">
                       <div className="w-2 h-2 rounded-full bg-askforge-gray-400 animate-pulse"></div>
                       <div className="w-2 h-2 rounded-full bg-askforge-gray-400 animate-pulse" style={{animationDelay: '0.2s'}}></div>
@@ -100,22 +183,27 @@ const Hero = () => {
                 </div>
               </div>
               
-              <div className="border-t pt-3 mt-auto">
-                <div className="flex items-center">
+              <div className="p-4 border-t border-askforge-gray-200 dark:border-askforge-gray-700">
+                <div className="flex items-center relative">
                   <input
                     type="text"
                     placeholder="Type your message..."
-                    className="flex-1 border rounded-l-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-askforge-blue"
+                    className="w-full rounded-full px-4 py-3 border border-askforge-gray-300 dark:border-askforge-gray-600 focus:ring-2 focus:ring-askforge-blue focus:border-transparent bg-white dark:bg-askforge-gray-700 dark:text-white pr-12"
                   />
-                  <button
-                    className="px-3 py-2 rounded-r-lg bg-askforge-blue text-white"
-                  >
+                  <button className="absolute right-2 p-2 rounded-full bg-askforge-blue text-white">
                     <Send className="h-5 w-5" />
                   </button>
                 </div>
               </div>
             </div>
           </div>
+        </div>
+        
+        <div className="mt-12 animate-bounce-slow">
+          <a href="#features" className="inline-flex flex-col items-center text-askforge-gray-500 dark:text-askforge-gray-400 hover:text-askforge-blue dark:hover:text-askforge-blue-light transition-colors">
+            <span className="text-sm mb-1">Explore Features</span>
+            <ArrowDown className="h-5 w-5" />
+          </a>
         </div>
       </div>
     </section>
@@ -128,13 +216,18 @@ const Features = () => {
   useIntersectionObserver(featuresRef);
 
   return (
-    <section className="py-16 bg-askforge-gray-50 px-4">
+    <section id="features" className="py-16 bg-askforge-gray-50 dark:bg-askforge-gray-900/50 px-4">
       <div ref={featuresRef} className="container mx-auto max-w-6xl opacity-0">
         <div className="text-center mb-16">
-          <h2 className="text-3xl font-bold mb-4 text-askforge-gray-900">
+          <div className="inline-block mb-4 px-3 py-1 rounded-full bg-askforge-purple/10 dark:bg-askforge-purple/20 border border-askforge-purple/20 dark:border-askforge-purple/30">
+            <span className="text-askforge-purple dark:text-askforge-purple-light text-sm font-medium">
+              Advanced Features
+            </span>
+          </div>
+          <h2 className="text-3xl font-bold mb-4 text-askforge-gray-900 dark:text-white">
             Powerful Features for Your Chatbot Needs
           </h2>
-          <p className="text-lg text-askforge-gray-600 max-w-2xl mx-auto">
+          <p className="text-lg text-askforge-gray-600 dark:text-askforge-gray-400 max-w-2xl mx-auto">
             Everything you need to create, deploy, and manage AI-powered chatbots that understand your content
           </p>
         </div>
@@ -186,14 +279,14 @@ const Features = () => {
           ].map((feature, index) => (
             <div 
               key={index}
-              className="bg-white p-6 rounded-xl shadow-soft hover:shadow-md transition-all duration-300 hover:translate-y-[-5px] opacity-0 animate-fade-in"
+              className="bg-white dark:bg-askforge-gray-800 p-6 rounded-xl shadow-soft hover:shadow-md transition-all duration-300 hover:translate-y-[-5px] opacity-0 animate-fade-in border border-askforge-gray-100 dark:border-askforge-gray-700"
               style={{ animationDelay: `${feature.delay}s` }}
             >
-              <div className={`w-12 h-12 bg-${feature.color}/10 rounded-lg mb-4 flex items-center justify-center`}>
+              <div className={`w-12 h-12 bg-${feature.color}/10 dark:bg-${feature.color}/20 rounded-lg mb-4 flex items-center justify-center`}>
                 {feature.icon}
               </div>
-              <h3 className="text-xl font-semibold mb-2">{feature.title}</h3>
-              <p className="text-askforge-gray-600">
+              <h3 className="text-xl font-semibold mb-2 dark:text-white">{feature.title}</h3>
+              <p className="text-askforge-gray-600 dark:text-askforge-gray-300">
                 {feature.description}
               </p>
             </div>
@@ -210,13 +303,20 @@ const Benefits = () => {
   useIntersectionObserver(benefitsRef);
 
   return (
-    <section className="py-16 px-4 bg-white">
-      <div ref={benefitsRef} className="container mx-auto max-w-6xl opacity-0">
+    <section className="py-16 px-4 bg-white dark:bg-askforge-gray-900 relative">
+      <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=1920&q=80')] bg-fixed opacity-5 mix-blend-overlay"></div>
+      
+      <div ref={benefitsRef} className="container mx-auto max-w-6xl opacity-0 relative z-10">
         <div className="text-center mb-16">
-          <h2 className="text-3xl font-bold mb-4 text-askforge-gray-900">
+          <div className="inline-block mb-4 px-3 py-1 rounded-full bg-askforge-green/10 dark:bg-askforge-green/20 border border-askforge-green/20 dark:border-askforge-green/30">
+            <span className="text-askforge-green dark:text-askforge-green-light text-sm font-medium">
+              Why Choose Us
+            </span>
+          </div>
+          <h2 className="text-3xl font-bold mb-4 text-askforge-gray-900 dark:text-white">
             Why Choose AskForge?
           </h2>
-          <p className="text-lg text-askforge-gray-600 max-w-2xl mx-auto">
+          <p className="text-lg text-askforge-gray-600 dark:text-askforge-gray-400 max-w-2xl mx-auto">
             Our platform offers unique advantages for businesses of all sizes
           </p>
         </div>
@@ -234,20 +334,20 @@ const Benefits = () => {
               description: "Your data stays private. We don't use your content to train our models."
             },
             {
-              icon: <CheckCircle className="h-6 w-6 text-askforge-purple" />,
+              icon: <Brain className="h-6 w-6 text-askforge-purple" />,
               title: "Custom Branding",
               description: "Match your brand's look and feel with fully customizable chatbot interfaces."
             },
           ].map((benefit, index) => (
             <div 
               key={index}
-              className="border p-6 rounded-xl hover:border-askforge-blue/50 transition-all duration-300 text-center"
+              className="border border-askforge-gray-200 dark:border-askforge-gray-700 p-6 rounded-xl hover:border-askforge-blue/50 dark:hover:border-askforge-blue/50 transition-all duration-300 text-center bg-white/50 dark:bg-askforge-gray-800/50 backdrop-blur-sm transform hover:scale-105"
             >
-              <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-askforge-gray-50 mb-4">
+              <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-askforge-gray-50 dark:bg-askforge-gray-700 mb-4">
                 {benefit.icon}
               </div>
-              <h3 className="text-xl font-semibold mb-2">{benefit.title}</h3>
-              <p className="text-askforge-gray-600">
+              <h3 className="text-xl font-semibold mb-2 dark:text-white">{benefit.title}</h3>
+              <p className="text-askforge-gray-600 dark:text-askforge-gray-300">
                 {benefit.description}
               </p>
             </div>
@@ -266,8 +366,27 @@ const CallToAction = () => {
   return (
     <section className="py-20 px-4">
       <div ref={ctaRef} className="container mx-auto max-w-5xl opacity-0">
-        <div className="bg-gradient-to-r from-askforge-blue to-askforge-purple rounded-2xl p-10 text-white shadow-lg overflow-hidden relative">
+        <div className="bg-gradient-to-r from-askforge-blue to-askforge-purple dark:from-askforge-blue/80 dark:to-askforge-purple/80 rounded-2xl p-10 text-white shadow-2xl overflow-hidden relative">
           <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=1920&q=80')] opacity-10 mix-blend-overlay"></div>
+          
+          {/* Animated particles */}
+          <div className="absolute inset-0 overflow-hidden">
+            {[...Array(10)].map((_, i) => (
+              <div 
+                key={i}
+                className="absolute rounded-full bg-white/20 animate-float"
+                style={{
+                  width: `${Math.random() * 30 + 10}px`,
+                  height: `${Math.random() * 30 + 10}px`,
+                  top: `${Math.random() * 100}%`,
+                  left: `${Math.random() * 100}%`,
+                  animationDuration: `${Math.random() * 10 + 10}s`,
+                  animationDelay: `${Math.random() * 5}s`
+                }}
+              ></div>
+            ))}
+          </div>
+          
           <div className="relative z-10 text-center">
             <h2 className="text-3xl font-bold mb-4">
               Ready to Build Your AI Chatbot?
@@ -278,7 +397,7 @@ const CallToAction = () => {
             <Button 
               size="lg" 
               variant="secondary" 
-              className="bg-white text-askforge-blue hover:bg-askforge-gray-100 transition-all duration-300 hover:scale-105" 
+              className="bg-white text-askforge-blue hover:bg-askforge-gray-100 transition-all duration-300 hover:scale-105 animate-pulse-slow" 
               asChild
             >
               <Link to="/login">
@@ -363,27 +482,10 @@ const Footer = () => {
   );
 };
 
-// Missing Send icon definition (referenced in the Hero component)
-const Send = ({ className }: { className?: string }) => (
-  <svg 
-    xmlns="http://www.w3.org/2000/svg" 
-    viewBox="0 0 24 24" 
-    fill="none" 
-    stroke="currentColor" 
-    strokeWidth="2" 
-    strokeLinecap="round" 
-    strokeLinejoin="round" 
-    className={className}
-  >
-    <path d="m22 2-7 20-4-9-9-4Z" />
-    <path d="M22 2 11 13" />
-  </svg>
-);
-
 // Main Index component
 const Index = () => {
   return (
-    <div className="min-h-screen flex flex-col bg-white">
+    <div className="min-h-screen flex flex-col bg-white dark:bg-askforge-gray-900">
       <Navbar />
       <Hero />
       <Features />
